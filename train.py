@@ -58,7 +58,7 @@ def eval(val_loader, model, criterion, device):
 
             input_id = input_id.to(device)
             mask = mask.to(device)
-            token_id.to(device)
+            token_id = token_id.to(device)
             target = target.to(device)
 
             # Forward pass
