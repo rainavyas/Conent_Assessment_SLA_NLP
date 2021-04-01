@@ -60,7 +60,7 @@ def get_spk_to_grade(grades_file, part=3):
         grade_dict[speaker_id] = grade
     return grade_dict
 
-def align(spk_to_utt, grade_dict, prompts_dict):
+def align(spk_to_utt, grade_dict, prompts_dict, grade_lim):
     grades = []
     utts = []
     prompts = []
@@ -68,7 +68,7 @@ def align(spk_to_utt, grade_dict, prompts_dict):
         grade_id = id[:12]
         prompt_id = str(id[:7]+id[22:24])
         try:
-            if grade_dict[grade_id] >= 4.0:
+            if grade_dict[grade_id] >= grade_lim:
                 grades.append(grade_dict[grade_id])
                 prompts.append(prompts_dict[prompt_id])
                 utts.append(spk_to_utt[id])
