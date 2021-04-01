@@ -68,9 +68,10 @@ def align(spk_to_utt, grade_dict, prompts_dict):
         grade_id = id[:12]
         prompt_id = str(id[:7]+id[22:24])
         try:
-            grades.append(grade_dict[grade_id])
-            prompts.append(prompts_dict[prompt_id])
-            utts.append(spk_to_utt[id])
+            if grade_dict[grade_id] >= 4.0:
+                grades.append(grade_dict[grade_id])
+                prompts.append(prompts_dict[prompt_id])
+                utts.append(spk_to_utt[id])
         except:
             print("Falied for speaker " + str(id))
     return utts, prompts, grades
@@ -84,14 +85,14 @@ def tokenize_text(utts, prompts):
     return input_ids, mask, token_ids
 
 
-def get_data(data_file, grades_file, prompts_mlf):
+def get_data(data_file, grades_file, prompts_mlf, grade_lim):
     '''
     Prepare data as tensors
     '''
     spk_to_utt = get_spk_to_utt(data_file)
     grade_dict = get_spk_to_grade(grades_file)
     prompts_dict = get_prompts_dict(prompts_mlf)
-    utts, prompts, grades = align(spk_to_utt, grade_dict, prompts_dict)
+    utts, prompts, grades = align(spk_to_utt, grade_dict, prompts_dict, grade_lim)
     input_ids, mask, token_ids = tokenize_text(utts, prompts)
     labels = torch.FloatTensor(grades)
 
