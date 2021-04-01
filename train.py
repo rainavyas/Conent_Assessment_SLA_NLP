@@ -87,6 +87,7 @@ if __name__ == "__main__":
     commandLineParser.add_argument('--lr', type=float, default=0.00001, help="Specify learning rate")
     commandLineParser.add_argument('--sch', type=int, default=10, help="Specify scheduler param")
     commandLineParser.add_argument('--seed', type=int, default=1, help="Specify seed")
+    commandLineParser.add_argument('--grade_lim', type=float, default=4.0, help="Specify minimum accepted grade")
 
     args = commandLineParser.parse_args()
     out_file = args.OUT
@@ -101,6 +102,7 @@ if __name__ == "__main__":
     lr = args.lr
     sch = args.sch
     seed = args.seed
+    grade_lim = args.grade_lim
 
     torch.manual_seed(seed)
 
@@ -114,8 +116,8 @@ if __name__ == "__main__":
     device = get_default_device()
 
     # Load the data as tensors
-    input_ids_train, mask_train, token_ids_train, labels_train = get_data(train_data_file, train_grades_files, train_prompts_mlf)
-    input_ids_test, mask_test, token_ids_test, labels_test = get_data(test_data_file, test_grades_files, test_prompts_mlf)
+    input_ids_train, mask_train, token_ids_train, labels_train = get_data(train_data_file, train_grades_files, train_prompts_mlf, grade_lim)
+    input_ids_test, mask_test, token_ids_test, labels_test = get_data(test_data_file, test_grades_files, test_prompts_mlf, grade_lim)
 
     # Use dataloader to handle batches
     train_ds = TensorDataset(input_ids_train, mask_train, token_ids_train, labels_train)
