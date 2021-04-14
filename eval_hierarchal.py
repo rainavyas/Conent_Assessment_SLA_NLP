@@ -65,7 +65,7 @@ if __name__ == "__main__":
         f.write(' '.join(sys.argv)+'\n')
 
     # Load the data as tensors
-    input_ids_test, mask_test, labels_test = get_data(test_data_file, test_grades_files)
+    input_ids_test, mask_test, labels_test = get_data(test_data_file, test_grades_files, 0.0)
     test_ds = TensorDataset(input_ids_test, mask_test, labels_test)
     test_dl = DataLoader(test_ds, batch_size=batch_size)
 
