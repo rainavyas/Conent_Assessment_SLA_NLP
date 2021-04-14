@@ -4,7 +4,7 @@ Use A1-C2 models to get grade predictions
 Choose a threshold k
 For all datapoints with predictions > k
 Get new prediction using B2-C2 models
-Caluclate RMSE for all predictions
+Caluclate MSE for all predictions
 Repeat for all k to get a plot of MSE vs threshold k
 '''
 
@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from eval_ensemble import eval
 
-def get_ensemble_preds(all_preds, targets):
+def get_ensemble_preds(all_preds):
     y_sum = torch.zeros(len(all_preds[0]))
     for preds in all_preds:
         y_sum += torch.FloatTensor(preds)
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     args = commandLineParser.parse_args()
     model_pathsA = args.MODELSA
     model_pathsA = model_pathsA.split()
-    model_pathsB = args.MODELSA
+    model_pathsB = args.MODELSB
     model_pathsB = model_pathsB.split()
     test_data_file = args.TEST_DATA
     test_grades_files = args.TEST_GRADES
@@ -65,7 +65,7 @@ if __name__ == "__main__":
         f.write(' '.join(sys.argv)+'\n')
 
     # Load the data as tensors
-    input_ids_test, mask_test, labels_test = get_data(test_data_file, test_grades_files, 0)
+    input_ids_test, mask_test, labels_test = get_data(test_data_file, test_grades_files)
     test_ds = TensorDataset(input_ids_test, mask_test, labels_test)
     test_dl = DataLoader(test_ds, batch_size=batch_size)
 
@@ -95,11 +95,13 @@ if __name__ == "__main__":
         preds, targets = eval(test_dl, model)
         all_predsB.append(preds)
 
-    predsA = get_ensemble_preds(all_predsA, targets)
-    predsB = get_ensemble_preds(all_predsB, targets)
+    predsA = get_ensemble_preds(all_predsA)
+    predsB = get_ensemble_preds(all_predsB)
 
     ks = []
     rmses = []
+    rmses_ref = []
+    ref = calculate_mse(torch.FloatTensor(predsA), torch.FloatTensor(targets)).item()
 
     for k in np.linspace(0, 6, 60):
         preds = apply_hierarchal(predsA, predsB, thresh=k)
@@ -107,10 +109,12 @@ if __name__ == "__main__":
         rmse = mse**0.5
         ks.append(k)
         rmses.append(rmse)
+        rmses_ref.append(ref)
 
     # Plot
     filename = 'rmse_vs_k.png'
     plt.plot(ks, rmses)
+    plt.plot(ks, rmses_ref)
     plt.xlabel("Threshold")
     plt.ylabel("RMSE")
     plt.savefig(filename)
