@@ -47,6 +47,7 @@ if __name__ == "__main__":
     commandLineParser.add_argument('MODELSB', type=str, help='trained .th models for second stage separated by space')
     commandLineParser.add_argument('TEST_DATA', type=str, help='prepped test data file')
     commandLineParser.add_argument('TEST_GRADES', type=str, help='test data grades')
+    commandLineParser.add_argument('TEST_PROMPTS', type=str, help='test data prompts mlf')
     commandLineParser.add_argument('--B', type=int, default=16, help="Specify batch size")
 
     args = commandLineParser.parse_args()
@@ -56,6 +57,7 @@ if __name__ == "__main__":
     model_pathsB = model_pathsB.split()
     test_data_file = args.TEST_DATA
     test_grades_files = args.TEST_GRADES
+    test_prompts_mlf = args.TEST_PROMPTS
     batch_size = args.B
 
     # Save the command run
@@ -65,7 +67,7 @@ if __name__ == "__main__":
         f.write(' '.join(sys.argv)+'\n')
 
     # Load the data as tensors
-    input_ids_test, mask_test, labels_test = get_data(test_data_file, test_grades_files, 0.0)
+    input_ids_test, mask_test, labels_test = get_data(test_data_file, test_grades_files, test_prompts_mlf, 0.0)
     test_ds = TensorDataset(input_ids_test, mask_test, labels_test)
     test_dl = DataLoader(test_ds, batch_size=batch_size)
 
