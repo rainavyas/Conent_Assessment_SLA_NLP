@@ -53,7 +53,7 @@ if __name__ == "__main__":
     # Save the command run
     if not os.path.isdir('CMDs'):
         os.mkdir('CMDs')
-    with open('CMDs/eval_hierarchal.cmd', 'a') as f:
+    with open('CMDs/eval_hierarchal_blind_content.cmd', 'a') as f:
         f.write(' '.join(sys.argv)+'\n')
 
     # Load the data as tensors
